@@ -9,6 +9,7 @@ class mobileuser
     void accept();
     void display();
     void seqsearch(mobileuser arr[], int num, string key);
+    void binarysearch(mobileuser arr[], int num, string key);
 };
 
 void mobileuser::accept()
@@ -46,6 +47,31 @@ void mobileuser::seqsearch(mobileuser arr[], int num, string key)
     }
 }
 
+void mobileuser::binarysearch(mobileuser arr[], int num, string key)
+{
+  int low=0;
+  int high=num-1;
+  while(low<=high)
+  {
+    int mid = (low + high)/2;
+    if(key==arr[mid].username)
+    {
+       cout<<"Record found!\n";
+       arr[mid].display();
+       return;
+    }
+    else if(key <arr[mid].username)
+    {
+        high=mid-1;
+    }
+    else
+    {
+        low=mid+1;
+    }
+  }
+  cout<<"Record not found!\n";
+}
+
 int main()
 {
     int num;
@@ -58,13 +84,44 @@ int main()
         cout << "Enter details for user " << (i + 1) << ":" << endl;
         s1[i].accept();
     }
-    for (int i = 0; i < num; i++)
+    int choice;
+    do
     {
-        s1[i].display();
-    }
     
-    cout << "Enter username to search: ";
-    cin >> searchKey;
-    s2.seqsearch(s1, num, searchKey);
+    cout<<"1) Display all users\n2) Linear search\n3) Binary search\n4) Exit";
+    cout<<"Enter your choice : ";
+    cin>>choice;
+    switch (choice)
+    {
+        case 1: 
+        for (int i = 0; i < num; i++)
+        {
+        cout<<"Registered user " << (i+1)<< ":" << endl;
+        s1[i].display();
+        }
+        break;
+
+        case 2:
+            cout << "Enter username to search: ";
+            cin >> searchKey;
+            s2.seqsearch(s1, num, searchKey);
+            break;
+        
+        case 3:
+            cout << "Enter username to search: ";
+            cin >> searchKey;
+            s2.binarysearch(s1, num, searchKey);
+            break;
+
+        case 4:
+        cout<<"Thank you!\n";
+        break;
+
+        default:
+        cout<<"Invalid choice\n";
+
+    } 
+    }while(choice != 4);
+
     return 0;
 }
