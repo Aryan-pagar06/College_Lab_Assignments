@@ -9,6 +9,8 @@ class mobileuser
     void accept();
     void display();
     void quicksort(mobileuser arr[], int low, int high);
+    void mergesort(mobileuser arr[], int low, int high);
+    void merge(mobileuser arr[], int low, int mid, int end);
     int partition(mobileuser arr[], int low, int high);
 };
 
@@ -56,6 +58,53 @@ void mobileuser :: quicksort(mobileuser arr[], int low, int high)
     quicksort(arr, j+1, high);
 }
 
+void mobileuser :: mergesort(mobileuser arr[], int low, int high)
+{ 
+     if(low>=high)
+     {
+        return;
+     }
+     int mid=low+(high-low)/2;
+     mergesort(arr, low, high);
+     mergesort(arr, mid+1, high);
+     merge(arr, low, mid, high);
+}
+
+void mobileuser :: merge(mobileuser arr[], int low, int mid, int high)
+{
+  vector<mobileuser>temp(high-low+1);
+  int left=low, right = mid+1, index=0;
+  while(left<=mid&&right<=high)
+  {
+    if(arr[left].username<=arr[right].username)
+    {
+        temp[index]=arr[left];
+        index++, left++;
+    }
+    else{
+        temp[index]=arr[right];
+        index++, right++;
+    }
+  }
+  while (left<=mid) 
+  {
+    temp[index]=arr[left];
+    index++, left++;
+  }
+  while(right<=high)
+  {
+    temp[index]=arr[right];
+    index++, right++;
+  }
+  index=0;
+  while(low<=high)
+  {
+    arr[low]=temp[index];
+    low++, index++;
+  }
+  
+}
+
 
 int main()
 {
@@ -73,7 +122,7 @@ int main()
     do
     {
     
-    cout<<"1) Display all users\n2) Quick sort \n3) Merge sort\n4) Exit";
+    cout<<"1) Display all users\n2) Quick sort \n3) Merge sort\n4) Exit\n";
     cout<<"Enter your choice : ";
     cin>>choice;
     switch (choice)
@@ -91,9 +140,11 @@ int main()
         cout<<"Usernames sorted!\n";
         break;
 
-
-        
-
+        case 3:
+        s2.mergesort(s1, 0, num-1);
+        cout<<"Usernames sorted!\n";
+        break;
+       
         case 4:
         cout<<"Thank you!\n";
         break;
