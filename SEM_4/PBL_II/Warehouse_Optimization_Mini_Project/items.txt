@@ -1,0 +1,10 @@
+102,Monitor,5,300
+103,Printer,8,400
+104,Desk,15,200
+105,Chair,10,250
+106,Server,25,1000
+107,Router,3,150
+108,Cables,1,50
+109,Macbook,1,100
+110,Pen,1,20
+111,Computer,2,50
