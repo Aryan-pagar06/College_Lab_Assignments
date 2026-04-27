@@ -77,4 +77,14 @@ int main ()
 
     fout.close();
 
+    ifstream fin;
+    fin.open("Employee.txt");
+    char c = fin.get();
+    while(! fin.eof()) {
+        cout<<c;
+        c = fin.get();
+    }
+
+    fin.close();
+
 }

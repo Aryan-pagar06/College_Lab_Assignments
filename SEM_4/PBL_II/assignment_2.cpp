@@ -65,7 +65,7 @@ void mobileuser :: mergesort(mobileuser arr[], int low, int high)
         return;
      }
      int mid=low+(high-low)/2;
-     mergesort(arr, low, high);
+     mergesort(arr, low, mid);
      mergesort(arr, mid+1, high);
      merge(arr, low, mid, high);
 }
