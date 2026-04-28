@@ -19,7 +19,7 @@ int place(int k,int col){
 }
 
 void nqueen(int k,int n){
-    for(int colm=1;colm<=n;colm++){
+    for(int colm=1;colm<=n;colm++) {
         if(place(k,colm)){
             x[k]=colm;
             if(k==n){
