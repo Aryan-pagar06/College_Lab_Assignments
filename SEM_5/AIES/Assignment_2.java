@@ -1,107 +1,124 @@
-import java.util.*;
 
-public class TspHillClimbing {
+import java.util.Scanner;
 
-    public static int cost(List<Integer> path, int[][] graph) {
+public class TSP {
+
+    static int getDistance(int[] tour, int[][] dist) {
+        int n = tour.length;
         int total = 0;
-        for (int i = 0; i < path.size() - 1; i++) {
-            total += graph[path.get(i)][path.get(i + 1)];
+
+        for (int i = 0; i < n - 1; i++) {
+            total += dist[tour[i]][tour[i + 1]];
         }
-        total += graph[path.get(path.size() - 1)][path.get(0)];
+
+        total += dist[tour[n - 1]][tour[0]];
+
         return total;
     }
 
-    public static void hillClimbing(int[][] graph, int start) {
-        int n = graph.length;
+    static void solveTSP(int n, int[][] dist) {
+        int[] curr = new int[n];
 
-        // Initialize path: [0, 1, 2, ..., n-1]
-        List<Integer> path = new ArrayList<>();
         for (int i = 0; i < n; i++) {
-            path.add(i);
+            curr[i] = i;
         }
-        
-        // Ensure path starts with the requested 'start' city
-        path.remove((Integer) start);
-        path.add(0, start);
 
-        int currentCost = cost(path, graph);
+        int currDist = getDistance(curr, dist);
 
         while (true) {
-            List<Integer> bestPath = new ArrayList<>(path);
-            int bestCost = currentCost;
+            int[] bestTour = curr.clone();
+            int minDist = currDist;
 
-            // Generate neighbor paths by swapping pairs of cities
-            for (int i = 1; i < n - 1; i++) {
+            for (int i = 0; i < n - 1; i++) {
                 for (int j = i + 1; j < n; j++) {
-                    List<Integer> newPath = new ArrayList<>(path);
-                    
-                    // Swap elements
-                    Collections.swap(newPath, i, j);
 
-                    int newCost = cost(newPath, graph);
+                    int[] nextTour = curr.clone();
 
-                    if (newCost < bestCost) {
-                        bestCost = newCost;
-                        bestPath = newPath;
+                    int temp = nextTour[i];
+                    nextTour[i] = nextTour[j];
+                    nextTour[j] = temp;
+
+                    int nextDist = getDistance(nextTour, dist);
+
+                    if (nextDist < minDist) {
+                        minDist = nextDist;
+                        bestTour = nextTour;
                     }
                 }
             }
 
-            // If a better neighbor is found, move to it; otherwise stop (local optimum)
-            if (bestCost < currentCost) {
-                path = bestPath;
-                currentCost = bestCost;
-            } else {
+            if (minDist >= currDist) {
                 break;
+            }
+
+            curr = bestTour;
+            currDist = minDist;
+        }
+
+        System.out.print("Shortest Route: ");
+
+        for (int i = 0; i < n; i++) {
+            System.out.print(curr[i] + " -> ");
+        }
+
+        System.out.println(curr[0]);
+
+        System.out.println("Minimum Distance: " + currDist);
+    }
+
+    static void runHardcoded() {
+        int n = 4;
+
+        int[][] dist = {
+            {0, 400, 500, 300},
+            {400, 0, 300, 400},
+            {500, 300, 0, 400},
+            {300, 500, 400, 0}
+        };
+
+        solveTSP(n, dist);
+    }
+
+    static void runDynamic(Scanner sc) {
+        System.out.print("Enter number of cities: ");
+        int n = sc.nextInt();
+
+        if (n <= 0) {
+            System.out.println("Invalid number of cities!");
+            return;
+        }
+
+        int[][] dist = new int[n][n];
+
+        System.out.println("Enter distance matrix:");
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                dist[i][j] = sc.nextInt();
             }
         }
 
-        // Print final result matching the exact Python formatting
-        System.out.println("\nBest Tour:");
-        StringBuilder tourString = new StringBuilder();
-        for (int city : path) {
-            tourString.append(city).append(" -> ");
-        }
-        tourString.append(path.get(0));
-        System.out.println(tourString.toString());
-        System.out.println("Cost = " + currentCost);
+        solveTSP(n, dist);
     }
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter number of cities: ");
-        int n = scanner.nextInt();
-        scanner.nextLine(); // Consume newline left behind by nextInt()
+        Scanner sc = new Scanner(System.in);
 
-        int[][] graph = new int[n][n];
+        System.out.println("Select an option:");
+        System.out.println("1. Run with hardcoded values");
+        System.out.println("2. Enter values dynamically");
 
-        System.out.println("Enter the distance matrix:");
-        int rowCount = 0;
-        while (rowCount < n) {
-            try {
-                String line = scanner.nextLine().trim();
-                if (line.isEmpty()) continue;
+        System.out.print("Choice: ");
+        int choice = sc.nextInt();
 
-                String[] parts = line.split("\\s+");
-                if (parts.length != n) {
-                    System.out.println("Enter exactly " + n + " numbers.");
-                    continue;
-                }
-
-                for (int j = 0; j < n; j++) {
-                    graph[rowCount][j] = Integer.parseInt(parts[j]);
-                }
-                rowCount++;
-
-            } catch (NumberFormatException e) {
-                System.out.println("Enter valid integers.");
-            }
+        if (choice == 1) {
+            runHardcoded();
+        } else if (choice == 2) {
+            runDynamic(sc);
+        } else {
+            System.out.println("Invalid choice!");
         }
 
-        System.out.print("Enter starting city (0 to " + (n - 1) + "): ");
-        int start = scanner.nextInt();
-
-        hillClimbing(graph, start);
-        scanner.close();
+        sc.close();
     }
 }
