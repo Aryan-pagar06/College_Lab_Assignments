@@ -1,108 +1,228 @@
+
+import java.util.*;
+
+public class SendMoreMoney {
+
+    public static void main(String[] args) {
+
+        int[] digits = new int[10];
+
+        for (int i = 0; i < 10; i++) {
+            digits[i] = i;
+        }
+
+        do {
+            int s = digits[0];
+            int e = digits[1];
+            int n = digits[2];
+            int d = digits[3];
+            int m = digits[4];
+            int o = digits[5];
+            int r = digits[6];
+            int y = digits[7];
+
+            if (s == 0 || m == 0) {
+                continue;
+            }
+
+            int send = s * 1000 + e * 100 + n * 10 + d;
+            int more = m * 1000 + o * 100 + r * 10 + e;
+            int money = m * 10000 + o * 1000 + n * 100
+                        + e * 10 + y;
+
+            if (send + more == money) {
+
+                System.out.println("S = " + s);
+                System.out.println("E = " + e);
+                System.out.println("N = " + n);
+                System.out.println("D = " + d);
+                System.out.println("M = " + m);
+                System.out.println("O = " + o);
+                System.out.println("R = " + r);
+                System.out.println("Y = " + y);
+
+                System.out.println();
+                System.out.println(" " + send);
+                System.out.println("+ " + more);
+                System.out.println("------");
+                System.out.println(" " + money);
+
+                break;
+            }
+
+        } while (nextPermutation(digits));
+
+    }
+
+    static boolean nextPermutation(int[] a) {
+        int i = a.length - 2;
+
+        while (i >= 0 && a[i] >= a[i + 1]) {
+            i--;
+        }
+
+        if (i < 0) {
+            return false;
+        }
+
+        int j = a.length - 1;
+
+        while (a[j] <= a[i]) {
+            j--;
+        }
+
+        int temp = a[i];
+        a[i] = a[j];
+        a[j] = temp;
+
+        int left = i + 1;
+        int right = a.length - 1;
+
+        while (left < right) {
+            temp = a[left];
+            a[left] = a[right];
+            a[right] = temp;
+
+            left++;
+            right--;
+        }
+
+        return true;
+    }
+}
+
+
+
 import java.util.*;
 
 public class Cryptarithmetic {
 
-    // Helper method to convert a word into its numeric value based on current assignment
-    private static long getValue(String word, Map<Character, Integer> assignment) {
-        long num = 0;
+    static String w1, w2, w3;
+
+    static ArrayList<Character> uniqueLetters = new ArrayList<>();
+
+    static int[] assignedDigits = new int[10];
+    static boolean[] usedDigits = new boolean[10];
+
+    static boolean solved = false;
+
+    static long getWordValue(String word) {
+        long value = 0;
+
         for (int i = 0; i < word.length(); i++) {
-            num = num * 10 + assignment.get(word.charAt(i));
+            char ch = word.charAt(i);
+
+            int index = uniqueLetters.indexOf(ch);
+
+            value = value * 10 + assignedDigits[index];
         }
-        return num;
+
+        return value;
+    }
+
+    static void solve(int index) {
+
+        if (index == uniqueLetters.size()) {
+
+            for (int i = 0; i < uniqueLetters.size(); i++) {
+
+                if (uniqueLetters.get(i) == w1.charAt(0)
+                    && assignedDigits[i] == 0) {
+                    return;
+                }
+
+                if (uniqueLetters.get(i) == w2.charAt(0)
+                    && assignedDigits[i] == 0) {
+                    return;
+                }
+
+                if (uniqueLetters.get(i) == w3.charAt(0)
+                    && assignedDigits[i] == 0) {
+                    return;
+                }
+            }
+
+            long num1 = getWordValue(w1);
+            long num2 = getWordValue(w2);
+            long num3 = getWordValue(w3);
+
+            if (num1 + num2 == num3) {
+
+                solved = true;
+
+                for (int i = 0; i < uniqueLetters.size(); i++) {
+                    System.out.println(
+                        uniqueLetters.get(i) + " = " + assignedDigits[i]
+                    );
+                }
+
+                System.out.println();
+                System.out.println(" " + num1);
+                System.out.println("+ " + num2);
+                System.out.println("------");
+                System.out.println(" " + num3);
+            }
+
+            return;
+        }
+
+        for (int d = 0; d <= 9; d++) {
+
+            if (!usedDigits[d]) {
+
+                usedDigits[d] = true;
+                assignedDigits[index] = d;
+
+                solve(index + 1);
+
+                if (solved) {
+                    return;
+                }
+
+                usedDigits[d] = false;
+            }
+        }
     }
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+
+        Scanner sc = new Scanner(System.in);
 
         System.out.print("Enter first word: ");
-        String word1 = scanner.next().toUpperCase();
+        w1 = sc.next().toUpperCase();
 
         System.out.print("Enter second word: ");
-        String word2 = scanner.next().toUpperCase();
+        w2 = sc.next().toUpperCase();
 
         System.out.print("Enter result word: ");
-        String result = scanner.next().toUpperCase();
+        w3 = sc.next().toUpperCase();
 
-        // Find unique letters maintaining insertion order
-        List<Character> letters = new ArrayList<>();
-        String combined = word1 + word2 + result;
+        String combined = w1 + w2 + w3;
+
         for (int i = 0; i < combined.length(); i++) {
+
             char ch = combined.charAt(i);
-            if (!letters.contains(ch)) {
-                letters.add(ch);
+
+            if (!uniqueLetters.contains(ch)) {
+                uniqueLetters.add(ch);
             }
         }
 
-        if (letters.size() > 10) {
-            System.out.println("More than 10 unique letters. No solution possible.");
-            scanner.close();
+        if (uniqueLetters.size() > 10) {
+            System.out.println(
+                "More than 10 unique letters. Cannot solve."
+            );
+            sc.close();
             return;
         }
 
-        // Keep track of letters that cannot be zero (leading letters)
-        Set<Character> leading = new HashSet<>();
-        leading.add(word1.charAt(0));
-        leading.add(word2.charAt(0));
-        leading.add(result.charAt(0));
+        solve(0);
 
-        Map<Character, Integer> assignment = new HashMap<>();
-        boolean[] used = new boolean[10];
-        boolean[] solved = new boolean[1]; // Wrapper array to safely track solution across recursive calls
-
-        solvePermutations(0, letters, leading, assignment, used, word1, word2, result, solved);
-
-        if (!solved[0]) {
+        if (!solved) {
             System.out.println("No solution found.");
         }
-        scanner.close();
-    }
 
-    // Recursive backtracking to simulate Python's itertools.permutations
-    private static void solvePermutations(int index, List<Character> letters, Set<Character> leading, 
-                                           Map<Character, Integer> assignment, boolean[] used, 
-                                           String word1, String word2, String result, boolean[] solved) {
-        // If a solution has already been found somewhere down the recursive chain, halt immediately
-        if (solved[0]) return;
-
-        // Base case: All letters have been assigned a unique digit
-        if (index == letters.size()) {
-            long n1 = getValue(word1, assignment);
-            long n2 = getValue(word2, assignment);
-            long n3 = getValue(result, assignment);
-
-            if (n1 + n2 == n3) {
-                solved[0] = true;
-                System.out.println("\nSolution:");
-                for (char ch : letters) {
-                    System.out.println(ch + " = " + assignment.get(ch));
-                }
-                System.out.println("\nVerification:");
-                System.out.println(n1 + " + " + n2 + " = " + n3);
-            }
-            return;
-        }
-
-        char currentLetter = letters.get(index);
-
-        // Try assigning digits 0-9 to the current letter
-        for (int digit = 0; digit <= 9; digit++) {
-            if (!used[digit]) {
-                // Rule validation: Leading letter cannot be 0
-                if (digit == 0 && leading.contains(currentLetter)) {
-                    continue;
-                }
-
-                // Place choice
-                used[digit] = true;
-                assignment.put(currentLetter, digit);
-
-                // Move to the next letter
-                solvePermutations(index + 1, letters, leading, assignment, used, word1, word2, result, solved);
-
-                // Undo choice (backtrack)
-                assignment.remove(currentLetter);
-                used[digit] = false;
-            }
-        }
+        sc.close();
     }
 }
+
